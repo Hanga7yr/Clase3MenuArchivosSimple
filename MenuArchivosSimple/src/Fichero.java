@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,151 +17,119 @@ import java.util.ArrayList;
 public class Fichero {
 
 	public Fichero () {}
-	
 
-	public ArrayList<String> LeerFichero ( String ruta ) throws IOException {
+	public static ArrayList<String> LeerFichero(String ruta){
 		
 		ArrayList<String> salida  = new ArrayList<>();
 					
-		try(BufferedReader fbr = new BufferedReader(new FileReader(ruta)) ){
-		
-			String linea = "Inicio";
+		try(BufferedReader fbr = new BufferedReader(new FileReader(ruta))) {
+			String linea = "";
 			
-			
-			while(linea != null){
-				
-				linea = fbr.readLine();
-				if (linea == null) {
-					System.out.println("Fichero cargado;");
-					
-				}else {
-					
-					salida.add(linea);					
-				}		
-				
-			}
+			while(linea != null)
+				if((linea = fbr.readLine()) == null)		;
+				else										salida.add(linea);					
 			
 		}catch(FileNotFoundException e ) {
-			System.out.println("no existe el fichero");
+			System.out.println("No existe el fichero");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
-		
-		return  salida ; 
+		return salida; 
 	}
 	
-	public boolean EscribirFichero (ArrayList<String> datos , String ruta ) {
+	public static boolean EscribirFichero(ArrayList<String> datos, String ruta) {
 		
-		boolean  salida = true ; 
+		boolean  salida = true;
 		
-	
-		Writer out = null;
 		try {
-			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(ruta), "UTF-8"));
+			BufferedWriter out = new BufferedWriter(new FileWriter(new File(ruta)));
 			
+			for (String linea : datos)
+				out.write(linea+"\n");
 			
-			for (String linea : datos) {
-				try {
-					
-					out.write(linea+"\n");
-					out.write("moradota moradota la polla moradota");
-				} catch (IOException ex) {
-					
-					salida = false ; 
-					System.out.println("Mensaje excepcion escritura: " + ex.getMessage());
-				}
-			}
-
+			out.close();
 		} catch (UnsupportedEncodingException | FileNotFoundException ex2) {
-			
-			salida = false ;
 			System.out.println("Mensaje error 2: " + ex2.getMessage());
 			
-		} finally {
-			try {
-				System.out.println("fichero , escrito ");
-				out.close();
-				
-			} catch (IOException ex3) {
-				System.out.println("Mensaje error cierre fichero: " + ex3.getMessage());
-			}
-		}
+			salida = false ;
+		} catch (IOException ex) {
+			System.out.println("Mensaje excepcion escritura: " + ex.getMessage());
 			
-		
+			salida = false ; 
+		}
 		return salida ; 
 	}	
 	
 	
-	public boolean CopiarFichero ( String origen , String destino) {
+	public static boolean CopiarFichero (String origen, String destino) {
 		
 		boolean salida = false ; 
 		
-	        File origin = new File(origen);
-	        File destination = new File(destino);
-	        
-	      System.out.println(destination.exists());
-	      System.out.println(origin.exists());
+    	File origin = new File(origen);
+        File destination = new File(destino);
 	      
-	        if (origin.exists() ) {
-	            try {
-	                InputStream in = new FileInputStream(origin);
-	                OutputStream out = new FileOutputStream(destination);
-	                // We use a buffer for the copy (Usamos un buffer para la copia).
-	                byte[] buf = new byte[1024];
-	                int len;
-	                while ((len = in.read(buf)) > 0) {
-	                    out.write(buf, 0, len);
-	                }
-	                in.close();
-	                out.close();
-	                return salida = true ;
-	            } catch (IOException ioe) {
-	            	
-	                ioe.printStackTrace();
-	                return salida = false ;
-	            }
-	        } else {
-	            return salida = false ;
-	        }
-		
+        if (origin.exists() && origin.isFile()) {
+    		try {
+                InputStream in = new FileInputStream(origin);
+                OutputStream out = new FileOutputStream(destination);
+                
+                byte[] buf = new byte[1024];
+                int len;
+                
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                
+                in.close();
+                out.close();
+                
+                destination.createNewFile();
+                
+                salida = true ;
+            } catch (IOException ioe) {
+            	ioe.printStackTrace();
+                salida = false ;
+            }
+        } else {
+        	System.out.println("El fichero origen no existe.");
+            salida = false ;
+        }
+        
+        return salida;
 	}
-	public boolean CrearFichero (String ruta ) {
+	public static boolean CrearFichero (String ruta) {
 		boolean salida = false ;
 		
-		File fichero = new File (ruta);
+		File fichero = new File(ruta);
 
 	    try {
-	    	  
-	    	  if (fichero.createNewFile()) {
-	    		  System.out.println("El fichero se ha creado correctamente");
-	    	  	salida = true ;
-	    	  }else {
-	    		  System.out.println("No ha podido ser creado el fichero");
-	    		  salida = false ;
-	    	  }
-    
-	    	} catch (IOException ioe) {
-	    	  ioe.printStackTrace();
-	    	}
+	    	if (fichero.createNewFile()) {
+	    		System.out.println("El fichero se ha creado correctamente");
+	    	  	salida = true;
+	    	}else {
+	    		System.out.println("No ha podido ser creado el fichero");
+	    		salida = false;
+    		}
+    	} catch (IOException ioe) {
+    		ioe.printStackTrace();
+    	}
 	
-		return salida = false ;
+		return salida;
 	}
 	
-	public boolean EliminarFichero (String ruta ) {
+	public static boolean EliminarFichero (String ruta) {
 		boolean salida = false ;
 		
-		File fichero = new File (ruta);
+		File fichero = new File(ruta);
   	
-  	if (fichero.delete()) {
-  		System.out.println("El fichero ha sido borrado satisfactoriamente");
-  		salida = true ; 
-  	}else 
-  		{
-  			  System.out.println("El fichero no puede ser borrado");
-  			  salida = false ; 
+	  	if (fichero.isFile() && fichero.delete()) {
+	  		System.out.println("El fichero ha sido borrado satisfactoriamente");
+	  		salida = true; 
+	  	}else{
+	  		System.out.println("El fichero no puede ser borrado");
+		  	salida = false; 
   		}
-		return salida = false ;
+		return salida;
 	}
-	
-	
- 	
 }

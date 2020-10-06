@@ -6,14 +6,18 @@ public abstract class Menu {
 	private static Scanner input = new Scanner(System.in);
 	public static void showMenu() {
 		String[] lineas = new String[] {
-			"1. Copiar ficheros",
-			"2. Crear un fichero",
-			"3. Borrar un fichero",
-			"4. Mostrar un fichero",
-			"5. Salir"
+			"  1. Copiar ficheros",
+			"  2. Crear un fichero",
+			"  3. Borrar un fichero",
+			"  4. Mostrar un fichero",
+			"  5. Salir"
 		};
 		
+		
 		boolean salir = false;
+		
+		System.out.println( " Menu De Gestión De Ficheros Manu & Manu Company" );
+		System.out.println("");
 		
 		do {
 			int option = -1;
@@ -21,13 +25,14 @@ public abstract class Menu {
 			for(String i : lineas)
 				System.out.println(i);
 			
+			
 			System.out.print("\nIngrese la opción a realizar: ");
 			String entrada = input.nextLine();
 					
 			try {
 				option = Integer.parseInt(entrada);
 			}catch(Exception e) {
-				System.out.println("La entrada no tiene el formato correcto.");
+				System.out.println(" La entrada no tiene el formato correcto. (intente escribir el número de la acción que desea realizar)");
 				option = -1;
 			}
 			
@@ -48,6 +53,9 @@ public abstract class Menu {
 					salir = true;
 					break;
 				default:
+					
+					System.out.println(" No existe esa acción ");
+					
 					break;
 			}
 			
